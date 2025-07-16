@@ -1,0 +1,29 @@
+{
+  "name": "Vanicia",
+  "tree": {
+    "$className": "DataModel",
+
+    "ReplicatedStorage": {
+      "coreShared": {
+        "$path": "src/shared",
+        "package": {
+          "$path": "Packages"
+        }
+      }
+    },
+
+    "ServerScriptService": {
+      "coreServer": {
+        "$path": "src/server"
+      }
+    },
+
+    "StarterPlayer": {
+      "StarterPlayerScripts": {
+        "coreClient": {
+          "$path": "src/client"
+        }
+      }
+    }
+  }
+}
