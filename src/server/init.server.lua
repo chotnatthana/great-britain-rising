@@ -1,1 +1,13 @@
-print("Hello world, from server!")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local sharedFolder = ReplicatedStorage:WaitForChild("coreShared")
+local getShare = sharedFolder:FindFirstChild("services"):GetChildren()
+
+-- Loop through the shared folder and treat its children as services1 
+for _, module in ipairs(getShare) do
+    if module:IsA("ModuleScript") then
+        print("Loading service: " .. module.Name)
+        local services = require(module)
+        services:init()
+    end
+end
+

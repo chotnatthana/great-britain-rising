@@ -6,8 +6,8 @@ local getShare = sharedFolder:FindFirstChild("controllers"):GetChildren()
 for _, module in ipairs(getShare) do
     if module:IsA("ModuleScript") then
         print("Loading controller: " .. module.Name)
-        local contoller = require(module)
-        contoller:init()
+        local controller = require(module)
+        controller:init()
     end
 end
 
