@@ -2,10 +2,15 @@ local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
 local player = Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local cam = workspace.CurrentCamera
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local coreAssets = ReplicatedStorage:WaitForChild("coreAssets")
 local UIAssets = coreAssets:WaitForChild("UI")
 local UIController = {}
+local StarterGui = game:GetService("StarterGui")
+
+StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Chat, false)
 
 -- Prevent multiple menus from being cloned
 if player.PlayerGui:FindFirstChild("Menu") then
@@ -17,6 +22,11 @@ menu.Parent = player:WaitForChild("PlayerGui")
 local rootFrame = menu:WaitForChild("RootFrame")
 local tabBar = menu.TabFrame:WaitForChild("TabBar")
 
+repeat wait()
+    cam.CameraType = Enum.CameraType.Scriptable
+until cam.CameraType == Enum.CameraType.Scriptable
+cam.FieldOfView = 35
+cam.CFrame = workspace:WaitForChild("CutCam").CFrame
 -- Tab buttons (Button under each tab)
 local tabButtons = {
     tabBar:WaitForChild("MainFrame"):WaitForChild("Button"),
