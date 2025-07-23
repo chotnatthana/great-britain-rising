@@ -10,7 +10,13 @@ local UIAssets = coreAssets:WaitForChild("UI")
 local UIController = {}
 local StarterGui = game:GetService("StarterGui")
 
-StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Chat, false)
+repeat 
+	local success = pcall(function() 
+		StarterGui:SetCore("ResetButtonCallback", false)
+        StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.PlayerList, false)
+	end)
+	task.wait(1)
+until success
 
 -- Prevent multiple menus from being cloned
 if player.PlayerGui:FindFirstChild("Menu") then
