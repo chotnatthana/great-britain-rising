@@ -8,6 +8,11 @@ BackgroundMusicManager.MusicFolder = SoundService:WaitForChild("MusicBackground"
 local currentMusic = nil
 local running = false
 
+function BackgroundMusicManager:init()
+	print("[BackgroundMusicController] Initializing...")
+	self:playRandomLoop()
+end
+
 function BackgroundMusicManager:getRandomTrack()
 	local sounds = self.MusicFolder:GetChildren()
 	local validSounds = {}
@@ -27,6 +32,7 @@ function BackgroundMusicManager:getRandomTrack()
 end
 
 function BackgroundMusicManager:playRandomLoop()
+	print("[BackgroundMusicController] Started")
 	if running then return end
 	running = true
 

@@ -5,8 +5,6 @@ local player = Players.LocalPlayer
 local cam = workspace.CurrentCamera
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local coreAssets = ReplicatedStorage:WaitForChild("coreAssets")
-local coreControllers = ReplicatedStorage:WaitForChild("coreShared"):WaitForChild("controllers")
-local backgroundMusicControllers = require(coreControllers:WaitForChild("backgroundMusic"))
 local UIAssets = coreAssets:WaitForChild("UI")
 local UIController = {}
 local StarterGui = game:GetService("StarterGui")
@@ -155,7 +153,6 @@ UserInputService.InputBegan:Connect(function(input, processed)
 end)
 
 -- Initialize
-backgroundMusicControllers:playRandomLoop()
 for i, frame in ipairs(contentFrames) do
     frame.Visible = (i == selectedTab)
     frame.Position = UDim2.new(0, 0, 0, 0)
