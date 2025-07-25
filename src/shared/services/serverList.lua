@@ -10,12 +10,12 @@ local MessagingService = game:GetService("MessagingService")
 
 
 function serverListService:init()
-    print("[ServerListService] Initializing...")
+    print("[".. script.Parent.Name .. "][".. script.Name .. "] Initializing...")
     self:Start()
 end
 
 function serverListService:Start()
-    -- Starting
+    print("[".. script.Parent.Name .. "][".. script.Name .. "] Started")
 end
 
 return serverListService

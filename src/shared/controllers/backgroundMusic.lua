@@ -9,7 +9,7 @@ local currentMusic = nil
 local running = false
 
 function BackgroundMusicManager:init()
-	print("[BackgroundMusicController] Initializing...")
+	print("[".. script.Parent.Name .. "][".. script.Name .. "] Initializing...")
 	self:playRandomLoop()
 end
 
@@ -32,7 +32,7 @@ function BackgroundMusicManager:getRandomTrack()
 end
 
 function BackgroundMusicManager:playRandomLoop()
-	print("[BackgroundMusicController] Started")
+	print("[".. script.Parent.Name .. "][".. script.Name .. "] Started")
 	if running then return end
 	running = true
 
