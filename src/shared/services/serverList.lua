@@ -1,88 +1,68 @@
--- OOP
-local serverListService = {}
-serverListService.__index = serverListService
+local serverList = {}
+serverList.__index = serverList
+
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local coreShared = ReplicatedStorage:WaitForChild("coreShared")
-local database = coreShared:WaitForChild("database")
-local serverName = require(database:WaitForChild("serverName"))
-local HttpService = game:GetService("HttpService")
+local coreAssets = ReplicatedStorage:WaitForChild("coreAssets")
 local MemoryStoreService = game:GetService("MemoryStoreService")
-local serverListStore = MemoryStoreService:GetSortedMap("serverList")
+local serverListStore = MemoryStoreService:GetSortedMap("ServerList")
+local remoteServerList = coreAssets:WaitForChild("RemoteEvents"):WaitForChild("ServerLists")
 
-
-function serverListService:init()
+function serverList:init()
     print("[".. script.Parent.Name .. "][".. script.Name .. "] Initializing...")
-    self.serverInformation = {}
-    self.randomId = HttpService:GenerateGUID(false)
-    self.adjectives = serverName.adjectives[math.random(1, #serverName.adjectives)]
-    self.objects = serverName.objects[math.random(1, #serverName.objects)]
-    self.serverName = self.adjectives .. " " .. self.objects
-    self.region = "N/A"
-    self.currentPlayers = #game.Players:GetPlayers()
+    self.Servers = self:GetAllServers()
+    remoteServerList.FireAllClients(self.Servers)
     self:Start()
 end
 
-function serverListService:fetchRegion()
-    local URL = "http://ip-api.com/json/"
-    local response
-    local data
+function serverList:deepEqual(t1, t2)
+    if t1 == t2 then return true end
+    if type(t1) ~= "table" or type(t2) ~= "table" then return false end
 
-    local success, err = pcall(function()
-        response = HttpService:GetAsync(URL)
-        data = HttpService:JSONDecode(response)
+    for k, v in pairs(t1) do
+        if not self:deepEqual(v, t2[k]) then
+            return false
+        end
+    end
+    for k, v in pairs(t2) do
+        if not self:deepEqual(v, t1[k]) then
+            return false
+        end
+    end
+    return true
+end
+
+function serverList:GetAllServers()
+    local servers = {}
+    local success, items = pcall(function()
+        return serverListStore:GetSortedAsync(false, 200)
     end)
 
     if success then
-        self.region = data.regionName
+        for _, item in ipairs(items) do
+            table.insert(servers, item.value)
+        end
     else
-        warn("Failed to fetch region: " .. tostring(err))
-        self.region = "N/A"
-        task.wait(3) -- Retry after 3 seconds
-        self:fetchRegion()
+        warn("[".. script.Parent.Name .. "][".. script.Name .. "] Failed to retrieve server list: " .. tostring(items))
     end
-
+    return servers
 end
 
-function serverListService:Start()
+function serverList:CheckForChange()
+    local newServers = self:GetAllServers()
+    if not self:deepEqual(self.Servers, newServers) then    
+        self.Servers = newServers
+        remoteServerList.FireAllClients(self.Servers)
+        print("[".. script.Parent.Name .. "][".. script.Name .. "] Server list updated.")
+    end
+end
+
+function serverList:Start()
     print("[".. script.Parent.Name .. "][".. script.Name .. "] Started")
-    self:fetchRegion()
-    self.serverInformation = {
-        serverName = self.serverName,
-        region = self.region,
-        serverId = game.JobId,
-        currentPlayers = self.currentPlayers
-    }
-
-    if game.VIPServerId == "" then
-        serverListStore:SetAsync(self.randomId, self.serverInformation, 345600)
-        print("[".. script.Parent.Name .. "][".. script.Name .. "] Log:: ", self.randomId, " To memory store")
-        print("[".. script.Parent.Name .. "][".. script.Name .. "] Log:: JobId: ", game.JobId)
+    while true do
+        task.wait(3) -- Check every 5 seconds
+        self:CheckForChange()
     end
-
-    game.Players.PlayerAdded:Connect(function(player)
-        if math.abs(self.currentPlayers - #game.Players:GetPlayers()) > 0 then
-            self.currentPlayers = #game.Players:GetPlayers()
-            self.serverInformation.currentPlayers = self.currentPlayers
-            serverListStore:SetAsync(self.randomId, self.serverInformation, 345600)
-            print("[".. script.Parent.Name .. "][".. script.Name .. "] Log:: Updated current players: ", self.currentPlayers)
-        end
-    end)
-
-    game.Players.PlayerRemoving:Connect(function(player)
-        if math.abs(self.currentPlayers - #game.Players:GetPlayers()) > 0 then
-            self.currentPlayers = #game.Players:GetPlayers()
-            self.serverInformation.currentPlayers = self.currentPlayers
-            serverListStore:SetAsync(self.randomId, self.serverInformation, 345600)
-            print("[".. script.Parent.Name .. "][".. script.Name .. "] Log:: Updated current players: ", self.currentPlayers)
-        end
-    end)
-
-    game:BindToClose(function()
-        if game.VIPServerId == "" then
-            serverListStore:RemoveAsync(self.randomId)
-            print("[".. script.Parent.Name .. "][".. script.Name .. "] Log:: Removed server information from memory store")
-        end
-    end)
 end
 
-return serverListService
+return serverList
