@@ -2,7 +2,6 @@ local serverList = {}
 serverList.__index = serverList
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local coreShared = ReplicatedStorage:WaitForChild("coreShared")
 local coreAssets = ReplicatedStorage:WaitForChild("coreAssets")
 local MemoryStoreService = game:GetService("MemoryStoreService")
 local serverListStore = MemoryStoreService:GetSortedMap("ServerList")
@@ -60,7 +59,7 @@ end
 function serverList:Start()
     print("[".. script.Parent.Name .. "][".. script.Name .. "] Started")
     while true do
-        task.wait(3) -- Check every 5 seconds
+        task.wait(3) -- Check every 3 seconds
         self:CheckForChange()
     end
 end
