@@ -2,14 +2,12 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local sharedFolder = ReplicatedStorage:WaitForChild("coreShared")
 local getShare = sharedFolder:FindFirstChild("services"):GetChildren()
 local Players = game:GetService("Players")
-local StarterGui = game:GetService("StarterGui")
 
 -- Function to teleport character to a position
 local function teleportToOrigin(player)
 	local character = player.Character or player.CharacterAdded:Wait()
 	local hrp = character:WaitForChild("HumanoidRootPart")
 
-	-- Make sure PrimaryPart is set
 	if not character.PrimaryPart then
 		character.PrimaryPart = hrp
 	end
@@ -32,7 +30,6 @@ Players.PlayerAdded:Connect(function(player)
 		teleportToOrigin(player)
 	end)
 end)
-
 
 -- Loop through the shared folder and treat its children as services1 
 for _, module in ipairs(getShare) do

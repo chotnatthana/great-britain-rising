@@ -2,13 +2,17 @@ local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
 local player = Players.LocalPlayer
-local character = player.Character or player.CharacterAdded:Wait()
 local cam = workspace.CurrentCamera
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local coreAssets = ReplicatedStorage:WaitForChild("coreAssets")
+local coreControllers = ReplicatedStorage:WaitForChild("coreShared"):WaitForChild("controllers")
+local backgroundMusicControllers = require(coreControllers:WaitForChild("backgroundMusic"))
 local UIAssets = coreAssets:WaitForChild("UI")
 local UIController = {}
 local StarterGui = game:GetService("StarterGui")
+local SoundService = game:GetService("SoundService")
+local UISoundGroup = SoundService:WaitForChild("UISoundGroup")
+local blur = game.Lighting:WaitForChild("Blur")
 
 repeat 
 	local success = pcall(function() 
@@ -55,6 +59,27 @@ local contentFrames = {
 local selectedTab = 1
 local highlightColor = Color3.fromRGB(231, 180, 13)
 local defaultColor = Color3.fromRGB(255, 255, 255)
+local highlightSound = UISoundGroup:WaitForChild("UI - Hover 1")
+local clickSound = UISoundGroup:WaitForChild("Flashlight Click")
+
+rootFrame.MainFrame.MainGameFrame.MouseEnter:Connect(function()
+    rootFrame.MainFrame.MainGameFrame.BackgroundColor3 = highlightColor
+    highlightSound:Play()
+end)
+rootFrame.MainFrame.MainGameFrame.MouseLeave:Connect(function()
+    rootFrame.MainFrame.MainGameFrame.BackgroundColor3 = defaultColor
+end)
+
+local blurTween
+
+local function updateBlur()
+    local targetSize = selectedTab == 1 and 0 or 24
+    if blurTween then
+        blurTween:Cancel()
+    end
+    blurTween = TweenService:Create(blur, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Size = targetSize })
+    blurTween:Play()
+end
 
 -- Helper to update tab highlights
 local function updateTabHighlights()
@@ -76,11 +101,12 @@ local function tweenToTab(newTab)
     local oldFrame = contentFrames[oldTab]
     local newFrame = contentFrames[newTab]
     local direction = (newTab > oldTab) and 1 or -1
-    local width = oldFrame.AbsoluteSize.X
 
     -- Update highlight immediately
     selectedTab = newTab
     updateTabHighlights()
+    updateBlur()
+    clickSound:Play()
 
     -- Prepare new frame offscreen
     newFrame.Position = UDim2.new(direction, 0, 0, 0)
@@ -129,11 +155,13 @@ UserInputService.InputBegan:Connect(function(input, processed)
 end)
 
 -- Initialize
+backgroundMusicControllers:playRandomLoop()
 for i, frame in ipairs(contentFrames) do
     frame.Visible = (i == selectedTab)
     frame.Position = UDim2.new(0, 0, 0, 0)
 end
 updateTabHighlights()
+updateBlur()
 
 
 return UIController
