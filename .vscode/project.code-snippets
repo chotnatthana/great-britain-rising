@@ -42,5 +42,12 @@
       "local ${1:NAME} = require(corePackages:WaitForChild(\"${2:NAME}\"))"
     ],
     "description": "Require a package"
+  },
+  "Log": {
+    "prefix": "log",
+    "body": [
+      "print(\"[\".. script.Parent.Name .. \"][\".. script.Name .. \"] Log:: \")"
+    ],
+    "description": "Logs a message to the game console"
   }
 }
