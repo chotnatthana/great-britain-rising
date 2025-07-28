@@ -10,7 +10,7 @@ local remoteServerList = coreAssets:WaitForChild("RemoteEvents"):WaitForChild("S
 function serverList:init()
     print("[".. script.Parent.Name .. "][".. script.Name .. "] Initializing...")
     self.Servers = self:GetAllServers()
-    remoteServerList.FireAllClients(self.Servers)
+    remoteServerList:FireAllClients(self.Servers)
     self:Start()
 end
 
@@ -59,7 +59,7 @@ end
 function serverList:Start()
     print("[".. script.Parent.Name .. "][".. script.Name .. "] Started")
     while true do
-        task.wait(3) -- Check every 3 seconds
+        task.wait(5) -- Check every 5 seconds
         self:CheckForChange()
     end
 end
